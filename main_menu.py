@@ -1,52 +1,33 @@
-from PyQt6.QtWidgets import QApplication, QLabel, QWidget
+import os
+from PyQt6.QtWidgets import QApplication, QWidget, QPushButton
 from PyQt6.QtGui import QFont
-from PyQt6.QtCore import QTimer
-import math
 import sys
 
 app = QApplication(sys.argv)
+
+# Set working directory to the script directory
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # Window setup
 window = QWidget()
 window.resize(1600, 900)
 window.setWindowTitle("Quest for the Dream Job")
 
-# Title text to animate
-text = "Q u e s t    f o r    t h e    D r e a m    J o b"
-labels = []
+# Set a background image for the window
+window.setStyleSheet("background-image: url('menu_background.png'); background-repeat: no-repeat; background-position: center; background-size: cover;")
 
-# Create QLabel for each character and add to the window
-font = QFont("Fira Sans", 36)
-start_x = (window.width() - len(text) * 20) // 2  # Calculate start position for centering
-y = 200
+start_button = QPushButton("Start Game", window)
 
-for i, char in enumerate(text):
-    label = QLabel(char, window)
-    label.setFont(font)
-    label.move(start_x + i * 20, y)  # Position labels horizontally with some spacing
-    labels.append(label)
-    label.show()
+# Step 4: Set custom font for the button
+custom_font = QFont("American Captain", 24)  # Set custom font with size 24
+start_button.setFont(custom_font)
+start_button.setStyleSheet("""
+    background-color: transparent;
+    border: none;
+    color: #FF5733;
+""")
 
-# Wave variables
-wave_amplitude = 10
-wave_frequency = 0.3
-counter = 0
-
-# Wave function to animate the labels
-def title_wave():
-    global counter
-    for i, label in enumerate(labels):
-        offset = math.sin(counter * wave_frequency + i) * wave_amplitude
-        label.move(label.x(), y + int(offset))
-  # Update vertical position for each label
-
-    counter += 1
-
-# Timer for animation
-timer = QTimer()
-timer.timeout.connect(title_wave)
-timer.start(100)
+start_button.move(700        , 400)
 
 window.show()
 sys.exit(app.exec())
-
