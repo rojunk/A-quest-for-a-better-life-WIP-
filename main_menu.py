@@ -1,8 +1,8 @@
 import os
 from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QSlider
-from PyQt6.QtGui import QPalette, QBrush, QPixmap, QFont
+from PyQt6.QtGui import QPalette, QBrush, QPixmap, QFont, QIcon
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
-from PyQt6.QtCore import QUrl, Qt
+from PyQt6.QtCore import QUrl, Qt, QSize
 import sys
 import math
 
@@ -120,7 +120,7 @@ exit_button.setStyleSheet("""
         margin: 0px;
     }
     QPushButton:hover {
-        color: #33FF57;  /* Change to a different color when hovered */
+        color: #33FF57;
     }
 """)
 exit_button_width = exit_button.sizeHint().width()
@@ -137,11 +137,28 @@ player.setSource(QUrl.fromLocalFile('menu_music.mp3'))
 player.setLoops(QMediaPlayer.Loops.Infinite)
 player.play()
 
-# Volume Slider setup
+#VOLUME SLIDER
 volume_slider = QSlider(Qt.Orientation.Horizontal, window)
 volume_slider.setRange(0, 100)  # Volume range from 0 to 100
-volume_slider.setValue(50)  # Set default volume to 50%
+volume_slider.setValue(40)  # Set default volume to 50%
 volume_slider.setGeometry(window.width() - 250, window.height() - 50, 200, 20)  # Position in the right-hand corner
+volume_slider.setStyleSheet("""
+    QSlider::groove:horizontal {
+        background: black;
+        height: 8px;
+        border-radius: 4px;
+    }
+
+    QSlider::handle:horizontal {
+        background: #FF5733;
+        border: 1px solid #5c5c5c;
+        width: 9px;
+        height: 9px;
+        margin: -5px 0;
+        border-radius: 9px;
+    }
+""")
+
 
 
 # Function to apply volume using a logarithmic conversion
@@ -154,8 +171,31 @@ def apply_volume(value):
 
     audio_output.setVolume(linear_volume)
 
-# Connect slider to volume change function
+apply_volume(volume_slider.value())
 volume_slider.valueChanged.connect(apply_volume)
+
+#VOLUME ICON
+volume_icon = QPushButton(window)
+volume_icon.setIcon(QIcon("sound_partial.png"))  # Replace with your icon file path
+volume_icon.setStyleSheet("background-color: transparent; border: none;")
+volume_icon.setGeometry(volume_slider.x() - 50, volume_slider.y() - 10, 40, 40)
+volume_icon.setIconSize(QSize(35, 35))
+
+def auto_mute(volume):
+    if volume == 0:
+        volume_icon.setIcon(QIcon("sound_off.png"))
+    elif 1 <= volume < 50:
+        volume_icon.setIcon(QIcon("sound_partial.png"))
+    elif volume >= 50:
+        volume_icon.setIcon(QIcon("sound_full.png"))
+
+#def volume_click():
+#    if volume_slider == 0:
+
+
+volume_slider.valueChanged.connect(auto_mute)
+#volume_icon.clicked.connect(volume_click)
+
 
 window.show()
 sys.exit(app.exec())
